@@ -1,1 +1,16 @@
+Introduction of the Challenge
+                                                     Ziyuan Rao
+Background
+In this work, I focus on designing Invar alloys, which have very low thermal expansion coefficients (TEC) at room temperature. So the output of the model is TEC. For the input, I curated a dataset of 698 alloys (397 in the dataset I send you). The representations are 20 dimensions including 6 elemental concentrations, 11 atomic properties, 2 CALPHAD (TC and MS) calculations and 1 DFT calculation (Mags). Which representation to use is decided on your domain knowledge and the details are not discussed here. 2. Initial analysis Here I used the Wasserstein autoencoder (WAE) for the dimension reduction. The training history and the reconstruction show the model is health and we can get the latent space with regulated distribution.
 
+Assess the performance of the neural network (NN) and gradient boosting decision tree (GBDT)
+There are various ways to get uncertainty. In this case, we do not use the Gaussian process because of the high dimensions of the inputs. Here we use ensemble models of NN and GBDT to get uncertainty. Specifically, we use Bayesian Optimization (BO) to get the top 10 hyperparameters of the models and then we use different hyperparameters to train the data to get ensemble results.
+
+The trainning history and the comparasion of predicted and experimental results show that The following picture shows the NN and GBDT are both accurate.
+
+A sequential learning
+Data: We split the data (698) into 85% unknown data and 15% known data. Iterations: We did 4 iterations, i.e. exploitation→exploration→exploration→exploitation. In the exploration, we choose the alloys with the largest uncertainty. In the exploitation, we choose the alloys with the lowest TECs. Acquisition function: We use rank-based policy: total rank= mean_rankalpha+std_rankbeta, where alpha+beta=1, mean_rank is the rank of TEC and std_rank is the rank of uncertainty. For only exploitation: alpha=1, beta=0; for only exploration: alpha=0, beta=1.
+
+For exploitation, the machine prefers alloys with low TECs. For exploration, the machine prefers alloys with large uncertainty.
+
+For exploration, we can observe an obvious decrease of error compared to exploitation.
